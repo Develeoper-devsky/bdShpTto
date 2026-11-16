@@ -20,6 +20,11 @@ tools/models/
   3ddfa/
     tddfa_mb1_fp16.tflite          # 3DMM regressor
     tddfa_*.bin                    # BFM bases + param mean/std
+  breast_detect/
+    320n.onnx                      # YOLOv8n breast boxes (MEDIUM)
+    640m.onnx                      # YOLOv8m breast boxes (HIGH)
+  breast_seg/
+    breasts_seg.pt                 # YOLOv8-seg instance masks (export to ONNX before the app uses it)
   SOURCES.md
 ```
 
@@ -39,6 +44,8 @@ Already present elsewhere in `tools/` (not duplicated here):
 | `schp-atr-18-int8-static.onnx` | [pirocheto/schp-atr-18](https://huggingface.co/pirocheto/schp-atr-18) | SCHP packaging; follow HF + original SCHP license |
 | `schp-pascal-7-int8-static.onnx` | [pirocheto/schp-pascal-7](https://huggingface.co/pirocheto/schp-pascal-7) | Same as above |
 | `3ddfa/*` | [litert-community/3DDFA-V2-LiteRT](https://huggingface.co/litert-community/3DDFA-V2-LiteRT) | 3DDFA_V2: **MIT**; BFM bases may have separate academic terms |
+| `breast_detect/320n.onnx`, `640m.onnx` | [NudeNet v3.4-weights](https://github.com/notAI-tech/NudeNet/releases/tag/v3.4-weights) | GitHub repo is **AGPL-3.0**; PyPI metadata says MIT. Keep only breast classes. Confirm before Play Store use |
+| `breast_seg/breasts_seg.pt` | [SDExplains/Adetailer](https://huggingface.co/SDExplains/Adetailer) `breasts_seg.pt` | No stated license. YOLOv8-seg, one class. Export to ONNX before shipping in the app |
 
 ## What each model is for in our app
 
@@ -51,12 +58,14 @@ Already present elsewhere in `tools/` (not duplicated here):
 | Shoulders / torso / limbs (coarse) | Pascal-7 + existing pose / multiclass |
 | Clothes-aware body parse | ATR-18 (optional; LIP-20 already downloaded in-app) |
 | 3D nose / jaw assist | 3DDFA LiteRT pack |
+| Bust, separate instances | `breast_detect/640m.onnx` (HIGH) or `320n.onnx` (MEDIUM). Filter to breast classes only |
+| Bust pixel mask | `breast_seg/breasts_seg.pt` after ONNX export, where it overlaps a detection |
 
 ## Not included (no good open drop-in)
 
 - Dedicated freckle detector (keep classical `FreckleMap`)
 - Eyelid-fat / eyelid refine net
-- Dedicated breast / shoulder / neck Meitu-style part nets
+- Dedicated shoulder / neck Meitu-style part nets
 
 ## Suggested GitHub release folder names
 
@@ -70,6 +79,9 @@ face_parsing_celebamask/face_parsing_celebamask_quantized.onnx
 schp_atr_18/schp-atr-18-int8-static.onnx
 schp_pascal_7/schp-pascal-7-int8-static.onnx
 3ddfa_v2_litert/...
+breast_detect/320n.onnx
+breast_detect/640m.onnx
+breast_seg/breasts_seg.pt
 ```
 
 ## Download commands (re-fetch)
